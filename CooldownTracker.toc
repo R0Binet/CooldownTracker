@@ -1,0 +1,13 @@
+## Interface: 120001
+## Title: CooldownTracker
+## Notes: Affiche les cooldowns offensifs et défensifs des membres du groupe/raid
+## Author: Vous
+## Version: 2.0.0
+## SavedVariables: CooldownTrackerDB
+
+Namespace.lua
+LibStub.lua
+LibCustomGlow-1.0.lua
+Spells.lua
+Core.lua
+Settings.lua
