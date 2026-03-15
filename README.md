@@ -52,7 +52,7 @@ CooldownTracker
 
 ### Page principale
 
-> 📸 *[Screenshot : page principale des options avec les sections Options, Mode d'affichage, Disposition, Icône]*
+![page principale des options avec les sections Options, Mode d'affichage, Disposition, Icône](https://ibb.co/0yb5n8fp)
 
 | Section | Options disponibles |
 |---|---|
@@ -65,7 +65,7 @@ CooldownTracker
 
 ### CD Offensif & CD Défensif
 
-> 📸 *[Screenshot : page "CD Offensif" avec les sections Options et Position]*
+![page "CD Offensif" avec les sections Options et Position](https://ibb.co/V6y07Y5)
 
 Chaque type de CD possède sa propre page de configuration :
 
@@ -78,7 +78,7 @@ Chaque type de CD possède sa propre page de configuration :
 
 ### Sorts trackés
 
-> 📸 *[Screenshot : page "Sorts" montrant la liste des sorts organisée par classe avec les headers colorés et les sections par spécialisation]*
+![page "Sorts" montrant la liste des sorts organisée par classe avec les headers colorés et les sections par spécialisation](https://ibb.co/RG3xnC6V)
 
 La liste des sorts est organisée par **classe** puis par **spécialisation** :
 - Header de classe coloré avec compteur et bouton **Tout** (cocher/décocher)
