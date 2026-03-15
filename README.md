@@ -52,7 +52,7 @@ CooldownTracker
 
 ### Page principale
 
-![page principale des options avec les sections Options, Mode d'affichage, Disposition, Icône](https://ibb.co/0yb5n8fp)
+![page principale des options avec les sections Options, Mode d'affichage, Disposition, Icône](https://i.ibb.co/8gZkmTjn/Capture-d-e-cran-2026-03-15-a-09-16-37.png)
 
 | Section | Options disponibles |
 |---|---|
@@ -65,7 +65,7 @@ CooldownTracker
 
 ### CD Offensif & CD Défensif
 
-![page "CD Offensif" avec les sections Options et Position](https://ibb.co/V6y07Y5)
+![page "CD Offensif" avec les sections Options et Position](https://i.ibb.co/r9PKC2N/Capture-d-e-cran-2026-03-15-a-09-16-48.png)
 
 Chaque type de CD possède sa propre page de configuration :
 
@@ -78,7 +78,7 @@ Chaque type de CD possède sa propre page de configuration :
 
 ### Sorts trackés
 
-![page "Sorts" montrant la liste des sorts organisée par classe avec les headers colorés et les sections par spécialisation](https://ibb.co/RG3xnC6V)
+![page "Sorts" montrant la liste des sorts organisée par classe avec les headers colorés et les sections par spécialisation](https://i.ibb.co/kV4RnhDW/Capture-d-e-cran-2026-03-15-a-09-17-04.png)
 
 La liste des sorts est organisée par **classe** puis par **spécialisation** :
 - Header de classe coloré avec compteur et bouton **Tout** (cocher/décocher)
