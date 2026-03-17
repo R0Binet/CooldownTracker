@@ -70,7 +70,7 @@ local function BuildPanel()
 
     -- ── Catégorie principale ──────────────────────────────────
     local CT_VERSION = C_AddOns.GetAddOnMetadata("CooldownTracker", "Version") or "1.0.0"
-    local category, layout = Settings.RegisterVerticalLayoutCategory("CooldownTracker v" .. CT_VERSION)
+    local category, layout = Settings.RegisterVerticalLayoutCategory("CooldownTracker")
 
     local function AddCheckbox(key, label, tooltip, onChange)
         local function GetValue() return CooldownTrackerDB[key] end
@@ -122,7 +122,8 @@ local function BuildPanel()
         layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(label))
     end
 
-    -- ── Options ──────────────────────────────────────────────
+    -- ── Version + Options ────────────────────────────────────
+    AddHeader("|cff888888Version : v" .. CT_VERSION .. "|r")
     AddHeader("Options")
 
     -- Multi-select "Informations CD" (bitfield : bit1=timer, bit2=roue)
