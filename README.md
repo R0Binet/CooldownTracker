@@ -1,32 +1,24 @@
 # CooldownTracker
 
-**CooldownTracker** est un addon World of Warcraft (Midnight 12.0) qui affiche les cooldowns offensifs et défensifs des membres de votre groupe directement sur les party frames.
+Addon World of Warcraft pour **Midnight 12.0** (Interface 120001) qui affiche les cooldowns offensifs et defensifs des membres de votre groupe directement sur les party frames Blizzard.
 
 ---
 
-## Aperçu
+## Fonctionnalites
 
-> 📸 *[Screenshot : vue en jeu avec les icônes de CDs affichées sur les party frames, montrant à la fois les offensifs à gauche et les défensifs à droite]*
-
----
-
-## Fonctionnalités
-
-- **Détection automatique** des cooldowns via les buffs actifs (`UNIT_AURA`)
-- **Icônes permanentes** ou affichage uniquement pendant le buff actif
-- **Séparation Offensif / Défensif** avec ancrage indépendant sur les party frames
-- **Glow animé** (ProcGlow) sur les icônes quand un buff est actif
-- **Roue de cooldown** et **timer natif** WoW sur chaque icône
-- **Gestion des charges** — badge numéroté sur les sorts à plusieurs charges
-- **Filtrage par spécialisation** — affiche uniquement les sorts de la spé détectée
-- **Support de toutes les classes** — 13 classes, sorts communs et par spécialisation
+- **Detection automatique** via les filtres Blizzard natifs (`BIG_DEFENSIVE`, `EXTERNAL_DEFENSIVE`, `IMPORTANT`)
+- **Icones persistantes** — les CDs detectes restent visibles meme apres expiration du buff
+- **Glow anime** (LibCustomGlow) quand un buff est actif
+- **Roue de cooldown** et **timer natif** sur les icones
+- **Separation Offensif / Defensif** avec ancrage independant sur les party frames
+- **Compatible secret values** — fonctionne malgre le systeme de securite Midnight 12.0
 
 ---
 
 ## Installation
 
-1. Téléchargez le fichier `.zip`
-2. Extrayez le dossier `CooldownTracker` dans :
+1. Telechargez le dossier `CooldownTracker`
+2. Placez-le dans :
    ```
    World of Warcraft/_retail_/Interface/AddOns/
    ```
@@ -34,99 +26,93 @@
 
 ---
 
+## Comment ca fonctionne
+
+CooldownTracker utilise les **filtres natifs de Blizzard** pour detecter les buffs offensifs et defensifs importants sur les membres du groupe. Quand un coequipier active un CD :
+
+1. L'icone apparait avec une **bordure coloree** et un **glow anime**
+2. La **roue de cooldown** s'anime pendant la duree du buff
+3. Quand le buff expire, l'icone passe en mode **disponible** (attenuee, sans glow)
+4. Quand le buff est reactive, l'icone se rallume
+
+Pour **vos propres sorts**, l'addon identifie le nom via `UNIT_SPELLCAST_SUCCEEDED` et peut afficher un timer de CD precis. Pour les **sorts des coequipiers**, les valeurs sont masquees par Midnight 12.0 — l'icone est correcte mais le nom et le timer ne sont pas disponibles.
+
+---
+
 ## Configuration
 
-Ouvrez les options via **Échap → Options → Add-ons → CooldownTracker**
+Ouvrez les options via **Echap > Options > Add-ons > CooldownTracker** ou tapez `/cdt`
 
 ### Structure des options
 
 ```
 CooldownTracker
-├── CD Offensif
-├── CD Défensif
-├── Sorts
-└── Informations
+├── CD Offensif      (activer, glow, position)
+├── CD Defensif      (activer, glow, position)
+├── Sorts            (liste par classe/spe, checkboxes)
+└── Informations     (aide et limitations)
 ```
 
----
+### Options principales
 
-### Page principale
-
-![page principale des options avec les sections Options, Mode d'affichage, Disposition, Icône](https://i.ibb.co/8gZkmTjn/Capture-d-e-cran-2026-03-15-a-09-16-37.png)
-
-| Section | Options disponibles |
+| Option | Description |
 |---|---|
-| **Options** | Informations CD (timer, roue, tooltip), Messages chat, Ignorer ses propres CDs |
-| **Mode d'affichage** | Toujours afficher toutes les icônes |
-| **Disposition** | Nombre de lignes, Icônes par ligne |
-| **Icône** | Taille (px), Espacement (px) |
+| **Informations CD** | Timer, roue de cooldown, tooltip |
+| **Garder les icones** | Les icones restent apres expiration (mode persistant) |
+| **Messages chat** | Annonce les CDs detectes dans le chat |
+| **Ignorer mes CDs** | Ne pas tracker le joueur local |
 
----
+### CD Offensif / Defensif
 
-### CD Offensif & CD Défensif
-
-![page "CD Offensif" avec les sections Options et Position](https://i.ibb.co/r9PKC2N/Capture-d-e-cran-2026-03-15-a-09-16-48.png)
-
-Chaque type de CD possède sa propre page de configuration :
-
-| Section | Options disponibles |
-|---|---|
-| **Options** | Activer, Glow quand buff actif |
-| **Position** | Ancrage (Gauche/Droite/Haut/Bas), Offset X, Offset Y |
-
----
-
-### Sorts trackés
-
-![page "Sorts" montrant la liste des sorts organisée par classe avec les headers colorés et les sections par spécialisation](https://i.ibb.co/kV4RnhDW/Capture-d-e-cran-2026-03-15-a-09-17-04.png)
-
-La liste des sorts est organisée par **classe** puis par **spécialisation** :
-- Header de classe coloré avec compteur et bouton **Tout** (cocher/décocher)
-- Header de spé avec icône de rôle (🛡 Tank / ✚ Heal / ⚔ DPS)
-- Chaque sort affiche : icône, badge OFF/DEF, nom, cooldown, checkbox
-
----
-
-## Informations & Limitations
-
-### Comment fonctionne la détection ?
-
-CooldownTracker surveille les buffs actifs via l'API `UNIT_AURA`. Un sort n'est détecté que s'il génère un **buff visible** sur l'unité.
-
-### Limitations importantes
-
-| Limitation | Détail |
-|---|---|
-| **Talents** | Impossible de savoir quels talents un coéquipier a choisis. Les sorts affichés peuvent ne pas être dans son build. |
-| **Charges** | La gestion des charges ne fonctionne que pour **votre propre personnage**. |
-| **Spécialisation** | Récupérée via inspection. Si hors de portée, tous les sorts de la classe sont affichés. |
+Chaque type a sa propre page : activer/desactiver, glow, ancrage (gauche/droite/haut/bas), offsets X/Y.
 
 ---
 
 ## Commandes slash
 
 ```
-/ct        Affiche l'aide
-/reload    Recharge l'interface (après modification des options)
+/cdt            Aide
+/cdt off        Toggle CDs offensifs
+/cdt def        Toggle CDs defensifs
+/cdt chat       Toggle messages chat
+/cdt debug      Toggle logs debug (chat)
+/cdt log        Toggle logs fichier (SavedVariable)
+/cdt clear      Effacer les CDs affiches
+/cdt status     Config actuelle
+/cdt identify   Afficher le cache spellcast
+/cdt frames     Debug des frames
 ```
 
 ---
 
-## Dépendances incluses
+## Limitations (Midnight 12.0)
+
+Le systeme de **secret values** de Midnight 12.0 impose des restrictions :
+
+| Limitation | Detail |
+|---|---|
+| **Identification** | Les sorts des autres joueurs affichent l'icone correcte mais ne peuvent pas etre nommes |
+| **Timer CD** | Le cooldown precis n'est disponible que pour vos propres sorts |
+| **Comparaison** | Impossible de comparer deux icones pour determiner si c'est le meme sort |
+| **CLEU** | `COMBAT_LOG_EVENT_UNFILTERED` est protege — les addons ne peuvent pas s'y enregistrer |
+
+---
+
+## Dependances incluses
 
 - [LibStub](https://www.curseforge.com/wow/addons/libstub)
 - [LibCustomGlow-1.0](https://www.curseforge.com/wow/addons/libcustomglow)
 
 ---
 
-## Compatibilité
+## Compatibilite
 
 | Version WoW | Support |
 |---|---|
-| Midnight 12.0 (Interface 120001) | ✅ Supporté |
+| Midnight 12.0 (Interface 120001) | Supporte |
 
 ---
 
 ## Licence
 
-Ce projet est distribué librement. Vous êtes libre de l'utiliser, modifier et redistribuer.
+Ce projet est distribue librement. Vous etes libre de l'utiliser, modifier et redistribuer.

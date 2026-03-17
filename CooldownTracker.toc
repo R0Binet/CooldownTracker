@@ -3,7 +3,7 @@
 ## Notes: Affiche les cooldowns offensifs et défensifs des membres du groupe/raid
 ## Author: Vous
 ## Version: 2.0.0
-## SavedVariables: CooldownTrackerDB
+## SavedVariables: CooldownTrackerDB, CooldownTrackerLog
 
 Namespace.lua
 LibStub.lua

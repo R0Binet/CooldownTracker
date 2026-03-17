@@ -150,13 +150,6 @@ local function BuildPanel()
     AddCheckbox("show_chat_message", "Messages dans le chat",   "Annonce les CDs dans le chat local.")
     AddCheckbox("filter_self",       "Ignorer mes propres CDs", "Ne pas tracker les sorts du joueur local.")
 
-    -- ── Mode d'affichage ─────────────────────────────────────
-    AddHeader("Mode d'affichage")
-    AddCheckbox("always_show_icons",
-        "Toujours afficher toutes les icônes",
-        "Activé : icônes permanentes, la roue s'active au cast.\nDésactivé : icônes uniquement pendant le buff.",
-        CT.RebuildAllAnchors)
-
     -- ── Disposition ──────────────────────────────────────────
     AddHeader("Disposition")
     AddSlider("num_rows",      "Nombre de lignes", "Nombre de lignes d'icônes.", 1, 5,  1, CT.RebuildAllAnchors)
@@ -201,8 +194,9 @@ local function BuildPanel()
     end
 
     AddHeaderOff("Options")
-    AddCheckboxOff("show_offensive",      "Activer",               "Affiche les cooldowns offensifs du groupe.", CT.RebuildAllAnchors)
-    AddCheckboxOff("glow_on_active_off",  "Glow quand buff actif", "Affiche un glow sur les icônes offensives pendant le buff.")
+    AddCheckboxOff("show_offensive",        "Activer",                          "Affiche les cooldowns offensifs du groupe.", CT.RebuildAllAnchors)
+    AddCheckboxOff("persistent_icons_off",  "Garder les icônes après expiration", "Les icônes offensives restent visibles après la fin du buff.", CT.RebuildAllAnchors)
+    AddCheckboxOff("glow_on_active_off",    "Glow quand buff actif",            "Affiche un glow sur les icônes offensives pendant le buff.")
 
     AddHeaderOff("Position")
     AddDropdownOff("anchor_point_off", "Ancrage", "Côté de la party frame pour les CDs offensifs.", {
@@ -243,8 +237,9 @@ local function BuildPanel()
     end
 
     AddHeaderDef("Options")
-    AddCheckboxDef("show_defensive",      "Activer",               "Affiche les cooldowns défensifs du groupe.", CT.RebuildAllAnchors)
-    AddCheckboxDef("glow_on_active_def",  "Glow quand buff actif", "Affiche un glow sur les icônes défensives pendant le buff.")
+    AddCheckboxDef("show_defensive",        "Activer",                          "Affiche les cooldowns défensifs du groupe.", CT.RebuildAllAnchors)
+    AddCheckboxDef("persistent_icons_def",  "Garder les icônes après expiration", "Les icônes défensives restent visibles après la fin du buff.", CT.RebuildAllAnchors)
+    AddCheckboxDef("glow_on_active_def",    "Glow quand buff actif",            "Affiche un glow sur les icônes défensives pendant le buff.")
 
     AddHeaderDef("Position")
     AddDropdownDef("anchor_point_def", "Ancrage", "Côté de la party frame pour les CDs défensifs.", {
@@ -654,9 +649,22 @@ function BuildSpellsPanel(parentCategory)
     local infoPanel = CreateFrame("Frame")
     infoPanel.name  = "Informations"
 
+    -- ScrollFrame pour éviter le débordement
+    local infoSF = CreateFrame("ScrollFrame", nil, infoPanel, "UIPanelScrollFrameTemplate")
+    infoSF:SetPoint("TOPLEFT",     infoPanel, "TOPLEFT",     0,  -8)
+    infoSF:SetPoint("BOTTOMRIGHT", infoPanel, "BOTTOMRIGHT", -20, 8)
+
+    local infoSC = CreateFrame("Frame", nil, infoSF)
+    infoSC:SetSize(1, 1)
+    infoSF:SetScrollChild(infoSC)
+
     infoPanel:SetScript("OnShow", function(self)
         if self.built then return end
         self.built = true
+
+        local width = infoSF:GetWidth()
+        if width <= 0 then return end
+        infoSC:SetWidth(width)
 
         local function AddTitle(parent, text, yPos)
             local fs = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
@@ -683,46 +691,56 @@ function BuildSpellsPanel(parentCategory)
         local yOff = -16
 
         -- Titre principal
-        AddTitle(self, "Comment fonctionne CooldownTracker ?", yOff)
+        AddTitle(infoSC, "Comment fonctionne CooldownTracker ?", yOff)
         yOff = yOff - 30
 
-        AddText(self, "CooldownTracker surveille les buffs actifs de vos coéquipiers via l'API |cffffd700UNIT_AURA|r et affiche une icône de cooldown dès qu'un sort est détecté.", yOff)
-        yOff = yOff - 50
+        AddText(infoSC, "CooldownTracker utilise les |cffffd700filtres Blizzard natifs|r (BIG_DEFENSIVE, EXTERNAL_DEFENSIVE, IMPORTANT) pour detecter automatiquement les cooldowns offensifs et defensifs des membres de votre groupe.", yOff)
+        yOff = yOff - 55
 
         -- Section : Détection
-        AddTitle(self, "|cff00ccff Détection des sorts|r", yOff)
+        AddTitle(infoSC, "|cff00ccff Fonctionnement|r", yOff)
         yOff = yOff - 28
 
-        AddText(self, "La détection repose sur la présence d'un |cffffd700buff actif|r sur l'unité. Un sort n'est visible que s'il génère un buff détectable par l'API WoW. Certains sorts n'en génèrent aucun et ne peuvent donc pas être suivis.", yOff)
+        AddText(infoSC, "Quand un coequipier active un CD, Blizzard signale le buff via |cffffd700UNIT_AURA|r. L'addon affiche alors une icone avec un glow anime. Quand le buff expire, l'icone passe en mode « disponible » (attenuee, sans glow).", yOff)
+        yOff = yOff - 55
+
+        AddText(infoSC, "Pour |cff00ff00vos propres sorts|r, l'addon peut identifier le nom et lancer un timer de cooldown precis apres expiration du buff. Pour les |cffff8800sorts des autres joueurs|r, les valeurs sont masquees par le systeme de securite de Midnight 12.0 — l'icone reste visible mais sans timer.", yOff)
+        yOff = yOff - 65
+
+        -- Section : Modes
+        AddTitle(infoSC, "|cff00ff00 Modes d'affichage|r", yOff)
+        yOff = yOff - 28
+
+        AddText(infoSC, "|cffffd700Garder les icones|r — Les icones restent visibles en permanence apres la premiere detection, meme quand le buff a expire. Le glow et la bordure vive n'apparaissent que pendant le buff actif. Cela permet de voir d'un coup d'oeil quels CDs chaque joueur possede. Ce reglage est independant pour les CDs offensifs et defensifs.", yOff)
+        yOff = yOff - 70
+
+        AddText(infoSC, "|cffffd700Actif uniquement|r — Les icones n'apparaissent que pendant le buff actif et disparaissent des qu'il expire. Mode plus epure, utile si vous ne voulez voir que les CDs en cours.", yOff)
         yOff = yOff - 50
 
+        -- Section : CDs Externes
+        AddTitle(infoSC, "|cff00ccff CDs Externes|r", yOff)
+        yOff = yOff - 28
+
+        AddText(infoSC, "Certains CDs defensifs (Pain Suppression, Blessing of Sacrifice, etc.) sont lances par un joueur sur un autre. L'addon attribue le CD au lanceur quand la source est identifiable. Sinon, le CD apparait sur la cible avec la mention « source inconnue ».", yOff)
+        yOff = yOff - 60
+
         -- Section : Limitations
-        AddTitle(self, "|cffff4444 Limitations importantes|r", yOff)
+        AddTitle(infoSC, "|cffff4444 Limitations (Midnight 12.0)|r", yOff)
         yOff = yOff - 28
 
-        AddText(self, "|cffffd700Talents|r — Il est |cffff4444impossible|r de savoir quels talents un autre joueur a choisis. Un sort affiché dans la liste peut ne pas être dans le build du joueur. L'icône sera simplement ignorée si le buff n'est jamais détecté.", yOff)
-        yOff = yOff - 55
+        AddText(infoSC, "Le systeme de |cffffd700secret values|r de Midnight 12.0 empeche les addons de lire les noms, icones et IDs des sorts des autres joueurs. CooldownTracker contourne cette limitation en utilisant les filtres natifs de Blizzard, mais certaines informations restent inaccessibles :", yOff)
+        yOff = yOff - 60
 
-        AddText(self, "|cffffd700Charges|r — Le nombre de charges d'un sort dépend des talents. Pour un |cffffd700autre joueur|r, cette information n'est pas accessible via l'API WoW. La gestion des charges (badge numéroté) ne fonctionne que pour |cff00ff00votre propre personnage|r.", yOff)
-        yOff = yOff - 55
-
-        AddText(self, "|cffffd700Spécialisation|r — La spécialisation d'un coéquipier est récupérée via |cffffd700inspection|r. Si le joueur est hors de portée ou que l'inspection échoue, tous les sorts de sa classe sont affichés par défaut.", yOff)
-        yOff = yOff - 55
-
-        -- Section : Mode d'affichage
-        AddTitle(self, "|cff00ff00 Mode d'affichage permanent|r", yOff)
-        yOff = yOff - 28
-
-        AddText(self, "Avec l'option |cffffd700«Toujours afficher toutes les icônes»|r activée, les icônes sont affichées en permanence pour chaque membre du groupe. La roue de cooldown s'anime uniquement quand le buff est détecté. Sans cette option, les icônes n'apparaissent que pendant le buff actif.", yOff)
+        AddText(infoSC, "- |cffffd700Identification|r : les sorts des autres joueurs apparaissent avec leur icone correcte mais ne peuvent pas etre nommes.\n- |cffffd700Cooldown precis|r : le timer de CD n'est disponible que pour vos propres sorts.\n- |cffffd700Comparaison|r : impossible de comparer deux icones pour savoir si c'est le meme sort.", yOff)
         yOff = yOff - 65
 
         -- Section : Conseils
-        AddTitle(self, "|cffaaaaff Conseils d'utilisation|r", yOff)
+        AddTitle(infoSC, "|cffaaaaff Conseils|r", yOff)
         yOff = yOff - 28
 
-        AddText(self, "• Désactivez les sorts que vos coéquipiers n'utilisent pas dans |cffffd700Sorts trackés|r pour éviter les icônes inutiles.\n• Utilisez les offsets X/Y pour positionner les icônes selon votre interface.\n• Les CDs offensifs et défensifs peuvent être ancrés à des côtés différents de la party frame.", yOff)
+        AddText(infoSC, "- Utilisez les offsets X/Y pour positionner les icones selon votre interface.\n- Les CDs offensifs et defensifs peuvent etre ancres a des cotes differents de la party frame.\n- Tapez |cffffcc00/cdt debug|r pour activer les logs dans le chat, ou |cffffcc00/cdt log|r pour enregistrer dans un fichier.", yOff)
 
-        self:SetHeight(math.abs(yOff) + 40)
+        infoSC:SetHeight(math.abs(yOff) + 40)
     end)
 
     if Settings and Settings.RegisterCanvasLayoutSubcategory then
