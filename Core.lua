@@ -991,6 +991,7 @@ local function UpdateUnitDisplay(unit)
                         spellName = iconFrame._ctSpellName,
                     }
                     ApplyStyleActive(iconFrame, tracked)
+                    ApplyGlow(iconFrame, true, groupKey)
                 else
                     -- Le buff n'est plus actif
                     local curState = iconFrame._ctState or "?"
@@ -1087,6 +1088,7 @@ local function UpdateUnitDisplay(unit)
             changed = true
 
             ApplyStyleActive(iconFrame, tracked)
+            ApplyGlow(iconFrame, true, data.groupKey)
             DebugLog("STYLE", "%s [%s] ICÔNE CRÉÉE", unit, data.spellName or iconKey)
 
             -- Message chat : CD utilisé

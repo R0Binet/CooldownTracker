@@ -69,7 +69,8 @@ local function BuildPanel()
     if not db then return end
 
     -- ── Catégorie principale ──────────────────────────────────
-    local category, layout = Settings.RegisterVerticalLayoutCategory("CooldownTracker")
+    local CT_VERSION = C_AddOns.GetAddOnMetadata("CooldownTracker", "Version") or "1.0.0"
+    local category, layout = Settings.RegisterVerticalLayoutCategory("CooldownTracker v" .. CT_VERSION)
 
     local function AddCheckbox(key, label, tooltip, onChange)
         local function GetValue() return CooldownTrackerDB[key] end
